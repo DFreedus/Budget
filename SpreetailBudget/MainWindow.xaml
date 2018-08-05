@@ -1,0 +1,29 @@
+﻿<Window x:Class="SpreetailBudget.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SpreetailBudget"
+        xmlns:viewmodels="clr-namespace:SpreetailBudget.ViewModels"
+        xmlns:views="clr-namespace:SpreetailBudget.Views"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="768" Width="1366">
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type viewmodels:HomeVM}">
+            <views:HomeView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewmodels:BudgetVM}">
+            <views:BudgetView/>
+        </DataTemplate>
+    </Window.Resources>
+
+    <Window.DataContext>
+        <viewmodels:MainWindowVM />
+    </Window.DataContext>
+    <Window.Background>
+        <ImageBrush ImageSource="/res/bk.jpg"/>
+    </Window.Background>
+    <Grid >
+        <ContentControl Content="{Binding SelectedView}" />
+    </Grid>
+</Window>

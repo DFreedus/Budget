@@ -1,0 +1,390 @@
+﻿<UserControl x:Class="SpreetailBudget.Views.BudgetView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:local="clr-namespace:SpreetailBudget.Views"
+             xmlns:viewmodels="clr-namespace:SpreetailBudget.ViewModels"
+             xmlns:converters="clr-namespace:SpreetailBudget.Converters"
+             mc:Ignorable="d" 
+             d:DesignHeight="768" d:DesignWidth="1366">
+    <UserControl.Resources>
+        <converters:BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter"/>
+        <converters:IsPositiveOrNegativeToColorConverter x:Key="isPositiveOrNegativeToColorConverter"/>
+        <DataTemplate x:Key="BudgetCategories">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding Transactions.Count}"
+                           Margin="40,0,0,0"
+                           Width="50" />
+                <TextBox Text="{Binding CategoryTitle, Mode=TwoWay}"
+                         Margin="10,0,0,0"
+                         Width="100"/>
+                <TextBox Text="{Binding BudgetedAmount, Mode=TwoWay, StringFormat=C}"
+                         Margin="40,0,0,0"
+                         VerticalAlignment="Center"
+                         Width="50"/>
+                <TextBlock Text="{Binding SpentAmount, Mode=OneWay, StringFormat=C}"
+                           Margin="35,0,0,0"
+                           VerticalAlignment="Center"
+                           Width="50"/>
+                <TextBlock Text="{Binding RemainingAmount, StringFormat=C}"
+                           Margin="30,0,0,0"
+                           VerticalAlignment="Center"
+                           Foreground="{Binding RemainingAmount, Converter={StaticResource isPositiveOrNegativeToColorConverter}}"
+                           Width="50"/>
+            </StackPanel>
+            
+        </DataTemplate>
+        <DataTemplate x:Key="BudgetTransactions">
+            <StackPanel Orientation="Horizontal"
+                        MinWidth="450"
+                        Visibility="{Binding Path=DataContext.IsFiltered, RelativeSource={RelativeSource AncestorType=ListViewItem}, Converter={StaticResource booleanToVisibilityConverter}}">
+                <TextBlock Text="{Binding Description}"
+                           Margin="0,0,0,5"
+                           Width="100"/>
+                <ComboBox Name="BudgetTransactionsTransactionCategories"
+                          ItemsSource="{Binding Path=DataContext.TransactionCategories, RelativeSource={RelativeSource AncestorType=ListView, AncestorLevel=2}}"
+                          SelectedValue="{Binding CategoryID}"
+                          SelectedValuePath="Key"
+                          DisplayMemberPath="Value"
+                          Width="100"
+                          Margin="5,0,0,5"
+                          IsHitTestVisible="False"
+                          IsTabStop="False"/>
+                <TextBlock Name="BudgetTransactionsAmount"
+                           Text="{Binding Amount, StringFormat=C}"
+                           Width="50"
+                           Margin="5,0,0,5"/>
+                <DatePickerTextBox Text="{Binding ProcessDate, StringFormat='MM dd yyyy'}"
+                                   Margin="5,0,0,5"
+                                   Focusable="False"
+                                   IsReadOnly="True"/>
+                
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="AllTransactions">
+            <StackPanel Orientation="Horizontal">
+                <TextBox Text="{Binding Description, Mode=TwoWay}"
+                         Margin="0,0,0,5"
+                         Width="100"/>
+                <ComboBox Name="AllTransactionsCategories"
+                          ItemsSource="{Binding DataContext.TransactionCategories, RelativeSource={RelativeSource AncestorType=ListView}}"
+                          SelectedValue="{Binding CategoryID, Mode=TwoWay}"
+                          SelectedValuePath="Key"
+                          DisplayMemberPath="Value"
+                          Width="100"
+                          Margin="5,0,0,5"/>
+                <TextBox Text="{Binding Amount, Mode=TwoWay, StringFormat=C}"
+                         Width="50"
+                         Margin="5,0,0,5"/>
+                <DatePicker SelectedDate="{Binding ProcessDate, Mode=TwoWay, TargetNullValue={x:Static sys:DateTime.Now}}"
+                            Margin="0,0,0,5"/>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="BudgetCategoryDescriptions">
+            <TextBlock Text="{Binding CategoryTitle, Mode=TwoWay}"
+                             Margin="10,0,0,0"
+                             Width="50"/>
+        </DataTemplate>
+        <Style x:Key="ButtonStyle" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border CornerRadius="15" BorderThickness="1" Padding="3" >
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            <Border.Style>
+                                <Style>
+                                    <Setter Property="Border.Background" Value="#1c494c"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="Border.IsMouseOver" Value="True">
+                                            <Setter Property="Border.Background" Value="Crimson" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Foreground" Value="#8ef2cc"/>
+        </Style>
+    </UserControl.Resources>
+    <Grid>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Button Content="Home"
+                    Command="{Binding ReturnHomeCommand}"
+                    Visibility="Hidden"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Top"
+                    Margin="5"
+                    Height="30"
+                    Width="125" 
+                    Style="{StaticResource ButtonStyle}"/>
+            
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <TextBox Text="{Binding Budget.Title, Mode=TwoWay}"
+                         Margin="337,5,486.333,5"
+                         Width="150"
+                         HorizontalAlignment="Center" RenderTransformOrigin="-0.122,0.4"/>
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"
+                                          MaxWidth="500"/>
+                        <ColumnDefinition Width="48"/>
+                        <ColumnDefinition Width="*"
+                                          MaxWidth="500"/>
+                        <ColumnDefinition Width="110"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Vertical"
+                                Grid.Row="1">
+                        <TextBlock Text="Budget Categories"
+                                   FontSize="16"
+                                   HorizontalAlignment="Center"/>
+                        <StackPanel Orientation="Horizontal"
+                                    Margin="20,10,5,0"
+                                    Background="Beige">
+                            <TextBlock Text="Transactions"
+                                       Margin="10,0,20,0"/>
+                            <TextBlock Text="Name"
+                                       Margin="40,0,10,0"/>
+                            <TextBlock Text="Budgeted" 
+                                       Margin="60,0,0,0"/>
+                            <TextBlock Text="Spent" 
+                                       Margin="40,0,0,0"/>
+                            <TextBlock Text="Remaining"
+                                       Margin="40,0,0,0"/>
+                        </StackPanel>
+                        <ListView ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                  ItemsSource="{Binding AllCategories}"
+                                  ItemTemplate="{StaticResource BudgetCategories}"
+                                  Margin="20,0,5,0"
+                                  MinWidth="450"
+                                  MinHeight="100"
+                                  MaxHeight="280">
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="{x:Type ListViewItem}">
+                                    <Setter Property="Background" Value="Pink"/>
+                                </Style>
+                                
+                            </ListView.ItemContainerStyle>
+                        </ListView>
+                        <StackPanel Orientation="Horizontal"
+                                    Background="Beige">
+                            <TextBlock Text="Categories: "
+                                       Margin="25,0,0,5"/>
+                            <TextBlock Text="{Binding AllCategories.Count}"
+                                       Margin="5,0,50,5"/>
+                            <TextBlock Text="{Binding Budget.TotalBudgetedAmount, StringFormat=C}"
+                                       Foreground="{Binding Budget.TotalBudgetedAmount, Converter={StaticResource isPositiveOrNegativeToColorConverter}}"
+                                       Margin="125,0,0,5"/>
+                            <TextBlock Text="{Binding Budget.TotalSpentAmount, StringFormat=C}"
+                                       Margin="45,0,0,5"/>
+                            <TextBlock Text="{Binding Budget.TotalRemainingAmount, StringFormat=C}"
+                                       Foreground="{Binding Budget.TotalRemainingAmount, Converter={StaticResource isPositiveOrNegativeToColorConverter}}"
+                                       Margin="50,0,0,5"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical"
+                                Grid.Row="1"
+                                Grid.Column="1">
+                        <Button Content="+"
+                                Command="{Binding AddCategoryCommand}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Top"
+                                Margin="5,30,5,5"
+                                Width="40" 
+                                Height="30"
+                                Style="{StaticResource ButtonStyle}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical"
+                                Grid.Row="1"
+                                Grid.Column="2">
+                        <TextBlock Text="New Transactions"
+                                   HorizontalAlignment="Center"
+                                   FontSize="16"/>
+                        <StackPanel Orientation="Horizontal"
+                                    Grid.Row="1"
+                                    Grid.Column="2"
+                                    Margin="20,10,5,0"
+                                    Background="Beige">
+                            <TextBlock Text="Description"
+                                       Margin="10,0,0,0"/>
+                            <TextBlock Text="Category"
+                                       Margin="40,0,0,0"/>
+                            <TextBlock Text="Amount" 
+                                       Margin="50,0,0,0"/>
+                            <TextBlock Text="Process Date" 
+                                       Margin="40,0,0,0"/>
+                        </StackPanel>
+                        <ListView ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                  ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                  ItemsSource="{Binding AllTransactions}"
+                                  ItemTemplate="{StaticResource AllTransactions}"
+                                  SelectedItem="{Binding SelectedTransaction, Mode=TwoWay}"
+                                  Margin="20,0,5,0"
+                                  MinHeight="100"
+                                  MinWidth="450"
+                                  MaxHeight="280">
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="{x:Type ListViewItem}">
+                                    <Setter Property="Background" Value="Pink"/>
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                        </ListView>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical"
+                                Grid.Row="1"
+                                Grid.Column="3">
+                        <Button Content="+"
+                                Command="{Binding NewTransactionCommand}"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Margin="5,30,5,5"
+                                Width="40" 
+                                Height="30"
+                                Style="{StaticResource ButtonStyle}"/>
+                        <Button Content="X"
+                                Command="{Binding RemoveTransactionCommand}"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Margin="5,0,5,5"
+                                Width="40"
+                                Height="30"
+                                Style="{StaticResource ButtonStyle}"/>
+                        <Button Content="Add To Budget"
+                                Command="{Binding AddTransactionsCommand}"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Top"
+                                Margin="5,0,5,5"
+                                Width="100"
+                                Height="30" 
+                                Style="{StaticResource ButtonStyle}"/>
+                    </StackPanel>
+                </Grid>
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"
+                                          MaxWidth="500"/>
+                        <ColumnDefinition Width="48" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Row="2"
+                                Orientation="Vertical"
+                                MinWidth="450">
+
+                        <TextBlock Text="Budgeted Transactions"
+                                   FontSize="16"
+                                   HorizontalAlignment="Center"/>
+                        <StackPanel Orientation="Horizontal"
+                                    Margin="20,10,5,0"
+                                    Background="Beige">
+                            <TextBlock Text="Description"
+                                       Margin="10,0,0,0"/>
+                            <TextBlock Text="Category"
+                                       Margin="40,0,0,0"/>
+                            <TextBlock Text="Amount" 
+                                       Margin="50,0,0,0"/>
+                            <TextBlock Text="Process Date"
+                                       
+                                       Margin="40,0,0,0"/>
+                        </StackPanel>
+                        <ListView Name="BudgetTransactions"
+                                  ItemsSource="{Binding BudgetCategories}"
+                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                  MaxHeight="280"
+                                  MinHeight="100"
+                                  Margin="20,0,5,20">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <ListView ItemsSource="{Binding Transactions}" 
+                                              ItemTemplate="{StaticResource BudgetTransactions}"
+                                              SelectedItem="{Binding DataContext.SelectedBudgetTransaction, RelativeSource={RelativeSource AncestorType=ListView}}"
+                                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                              MinWidth="410"
+                                              BorderBrush="Transparent"
+                                              BorderThickness="0" >
+                                        <ListView.ItemContainerStyle>
+                                            <Style TargetType="{x:Type ListViewItem}">
+                                                <Setter Property="Background" Value="Pink"/>
+                                            </Style>
+                                        </ListView.ItemContainerStyle>
+                                    </ListView>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="{x:Type ListViewItem}">
+                                    <Setter Property="Background" Value="Pink"/>
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                        </ListView>
+                        <TextBlock Text="Filters"
+                                   FontSize="16"
+                                   HorizontalAlignment="Center"/>
+                        <StackPanel Orientation="Horizontal"
+                                    Margin="20,0,5,0">
+                            
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock Text="Category" 
+                                           Margin="10,5,5,5"/>
+                                <ComboBox Name="CategoryFilterComboBox"
+                                          ItemsSource="{Binding AllCategories}"
+                                          ItemTemplate="{StaticResource BudgetCategoryDescriptions}"
+                                          SelectedItem="{Binding CategoryFilter, Mode=TwoWay}"
+                                          Height="30"
+                                          Width="100"
+                                          Margin="0,5,5,10"/>
+                            </StackPanel>
+                            <Button Content="X"
+                                    Command="{Binding ClearCategoryFilterCommand}"
+                                    VerticalAlignment="Bottom"
+                                    Margin="0,5,5,10"
+                                    Width="20"
+                                    Style="{StaticResource ButtonStyle}"/>
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock Text="From Date"
+                                           Margin="5,5,5,5"/>
+                                <DatePicker SelectedDate="{Binding FromDateFilter, Mode=TwoWay}"
+                                            Margin="0,5,0,10"
+                                            Width="90"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock Text="To Date"
+                                           Margin="5,5,5,5"></TextBlock>
+                                <DatePicker SelectedDate="{Binding ToDateFilter, Mode=TwoWay}"
+                                            Margin="5,5,0,10"
+                                            Width="90"/>
+                            </StackPanel>
+                                <Button Content="X"
+                                        Command="{Binding ClearDateRangeFilterCommand}"
+                                        VerticalAlignment="Bottom"
+                                        Margin="5,5,5,10"
+                                        Width="20"
+                                        Style="{StaticResource ButtonStyle}"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical"
+                                Grid.Column="1">
+                        <Button Name="RemoveBudgetTransactionButton"
+                                Content="X"
+                                Command="{Binding RemoveBudgetTransaction}"
+                                CommandParameter="{Binding SelectedBudgetTransaction}"
+                                Margin="5,20,5,5"
+                                Width="40"
+                                Height="30"
+                                VerticalAlignment="Top"
+                                Style="{StaticResource ButtonStyle}"/>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>
