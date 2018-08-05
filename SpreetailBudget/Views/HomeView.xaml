@@ -20,6 +20,7 @@
                     Margin="5"
                     Width="125"/>
             <Button Content="Open Budget"
+                    Visibility="Hidden"
                     Command="{Binding LoadExistingBudgetCommand}"
                     Margin="5"
                     Width="125" />

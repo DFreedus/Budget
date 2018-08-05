@@ -17,6 +17,7 @@ namespace SpreetailBudget.ViewModels
         public BudgetVM()
         {
             Budget = new Budget("New Budget");
+
         }
 
         #region Commands
