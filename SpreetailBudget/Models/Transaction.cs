@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace SpreetailBudget.Models
 {
@@ -42,11 +44,11 @@ namespace SpreetailBudget.Models
             set { _processDate = value; OnPropertyChanged("ProcessDate"); }
         }
 
-        private bool _isFiltered = false;
-        public bool IsFiltered
+        private bool _isVisible = true;
+        public bool IsVisible
         {
-            get { return _isFiltered; }
-            set { _isFiltered = value; OnPropertyChanged("IsFiltered"); }
+            get { return _isVisible; }
+            set { _isVisible = value; OnPropertyChanged("IsVisible"); }
         }
     }
 }

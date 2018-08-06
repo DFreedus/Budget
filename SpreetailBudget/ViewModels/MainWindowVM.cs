@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace SpreetailBudget.ViewModels
@@ -37,12 +38,12 @@ namespace SpreetailBudget.ViewModels
 
         
 
-        private ICommand _switchToHomeViewCommand;
-        public object SwitchToHomeViewCommand
+        private ICommand _exitApplicationCommand;
+        public object ExitApplicationCommand
         {
             get
             {
-                return _switchToHomeViewCommand ?? (_switchToHomeViewCommand = new RelayCommand(x => { SwitchToHomeView(); }));
+                return _exitApplicationCommand ?? (_exitApplicationCommand = new RelayCommand(x => { ExitApplication(); }));
             }
         }
 
@@ -57,9 +58,9 @@ namespace SpreetailBudget.ViewModels
             }
         }
 
-        private void SwitchToHomeView()
+        private void ExitApplication()
         {
-            SelectedView = _homeView;
+            Application.Current.Shutdown();
         }
         private void SwitchToBudgetView()
         {

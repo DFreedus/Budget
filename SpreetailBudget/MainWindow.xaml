@@ -24,6 +24,6 @@
         <ImageBrush ImageSource="/res/bk.jpg"/>
     </Window.Background>
     <Grid >
-        <ContentControl Content="{Binding SelectedView}" />
+        <ContentControl Content="{Binding SelectedView}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
     </Grid>
 </Window>

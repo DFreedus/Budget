@@ -1,5 +1,7 @@
 ﻿using SpreetailBudget.Command;
+using SpreetailBudget.Extensions;
 using SpreetailBudget.Models;
+using SpreetailBudget.Serialize;
 using SpreetailBudget.Views;
 using System;
 using System.Collections.Generic;
@@ -31,6 +33,37 @@ namespace SpreetailBudget.ViewModels
             }
         }
 
+        private ICommand _saveBudgetCommand;
+        public object SaveBudgetCommand
+        {
+            get
+            {
+                return _saveBudgetCommand ?? (_saveBudgetCommand = new RelayCommand(x => { SaveBudget(); }));
+            }
+        }
+
+        
+
+        private ICommand _loadExistingBudgetCommand;
+        public object LoadExistingBudgetCommand
+        {
+            get
+            {
+                return _loadExistingBudgetCommand ?? (_loadExistingBudgetCommand = new RelayCommand(x => { LoadBudget(); }));
+            }
+        }
+
+        private ICommand _clearCurrentBudgetCommand;
+        public object ClearCurrentBudgetCommand
+        {
+            get
+            {
+                return _clearCurrentBudgetCommand ?? (_clearCurrentBudgetCommand = new RelayCommand(x => { ClearBudget(); }));
+            }
+        }
+
+        
+
         private ICommand _newTransactionCommand;
         public object NewTransactionCommand
         {
@@ -58,14 +91,13 @@ namespace SpreetailBudget.ViewModels
                 return _removeBudgetTransaction ?? (_removeBudgetTransaction = new RelayCommand(x => { RemoveBudgetTransactions(SelectedBudgetTransaction); }));
             }
         }
-
         
-        private ICommand _addTransactionsCommand;
-        public object AddTransactionsCommand
+        private ICommand _addTransactionsToBudgetCommand;
+        public object AddTransactionsToBudgetCommand
         {
             get
             {
-                return _addTransactionsCommand ?? (_addTransactionsCommand = new RelayCommand(x => { AddTransactions(); }));
+                return _addTransactionsToBudgetCommand ?? (_addTransactionsToBudgetCommand = new RelayCommand(x => { AddTransactionsToBudget(); }));
             }
         }
 
@@ -87,12 +119,102 @@ namespace SpreetailBudget.ViewModels
             }
         }
 
-
-
-
-
         #endregion Commands
 
+        #region command execution methods
+        private void SaveBudget()
+        {
+            Serializer.Serialize(Budget);
+        }
+        private void LoadBudget()
+        {
+            var budget = Serializer.LoadBudget();
+            if (budget != null)
+                Budget = budget;
+            OnPropertyChanged("BudgetCategories");
+            OnPropertyChanged("Filter");
+        }
+
+        private void ClearBudget()
+        {
+            var messageBoxResult = System.Windows.MessageBox.Show("Are you sure you want to clear your current budget?\nThis action can't be undone!");
+            switch (messageBoxResult)
+            {
+                case (System.Windows.MessageBoxResult.OK):
+                    {
+                        foreach (var category in Budget.Categories)
+                            category.Transactions.Clear();
+                        Budget.Categories.Clear();
+                        //Budget = new Budget("");
+                        OnPropertyChanged("BudgetCategories");
+                        OnPropertyChanged("BudgetTransactions");
+                        OnPropertyChanged("FilteredBudgetTransactions");
+                        ClearDateFilter();
+                        break;
+                    }
+                default:
+                    return;
+            }
+        }
+
+        private void NewTransaction()
+        {
+            var transaction = new Transaction();
+            AllTransactions.Add(transaction);
+        }
+
+        private void AddTransactionsToBudget()
+        {
+            foreach (var transaction in AllTransactions)
+            {
+                var category = AllCategories.FirstOrDefault(x => x.ID == transaction.CategoryID);
+                if (category != null)
+                    category.Transactions.Add(transaction);
+            }
+            OnPropertyChanged("FilteredBudgetTransactions");
+            AllTransactions.Clear();
+        }
+
+        private void RemoveTransaction(Transaction selectedTransaction)
+        {
+            if (selectedTransaction == null)
+                return;
+            else
+                AllTransactions.Remove(selectedTransaction);
+        }
+
+        private void RemoveBudgetTransactions(Transaction selectedBudgetTransaction)
+        {
+            if (selectedBudgetTransaction == null)
+                return;
+            else
+            {
+                var category = Budget.GetCategoryThatContainsTransaction(selectedBudgetTransaction);
+                if (category != null)
+                    category.Transactions.Remove(selectedBudgetTransaction);
+
+            }
+        }
+
+        private void AddCategory()
+        {
+            Budget.Categories.Add(new BudgetCategory(Budget, Budget.Categories.Count() + 1, ""));
+            OnPropertyChanged("BudgetCategories");
+        }
+
+        private void ClearCategoryFilter()
+        {
+            CategoryFilter = null;
+        }
+
+        private void ClearDateFilter()
+        {
+            FromDateFilter = ToDateFilter = null;
+
+        }
+        #endregion command execution methods
+
+        #region ObservableCollections
         private Dictionary<int, string> _transactionCategories = new Dictionary<int, string>();
         public Dictionary<int, string> TransactionCategories
         {
@@ -105,6 +227,7 @@ namespace SpreetailBudget.ViewModels
         }
 
         public ObservableCollection<Transaction> AllTransactions { get; } = new ObservableCollection<Transaction>();
+
         private ObservableCollection<BudgetCategory> _allCategories = new ObservableCollection<BudgetCategory>();
         public ObservableCollection<BudgetCategory> AllCategories
         {
@@ -148,6 +271,25 @@ namespace SpreetailBudget.ViewModels
             }
         }
 
+        private ObservableCollection<Transaction> _filteredBudgetTransactions = new ObservableCollection<Transaction>();
+        public ObservableCollection<Transaction> FilteredBudgetTransactions
+        {
+            get
+            {
+                _filteredBudgetTransactions.Clear();
+                foreach (var category in Budget.Categories)
+                {
+                    foreach (var transaction in category.Transactions.Where(x => x.IsVisible))
+                    {
+                        _filteredBudgetTransactions.Add(transaction);
+                    }
+                }
+                return _filteredBudgetTransactions;
+            }
+        }
+
+        #endregion ObservableCollections
+
         private Transaction _selectedTransaction;
         public Transaction SelectedTransaction
         {
@@ -159,63 +301,7 @@ namespace SpreetailBudget.ViewModels
         public Transaction SelectedBudgetTransaction
         {
             get { return _selectedBudgetTransaction; }
-            set { _selectedBudgetTransaction = value; OnPropertyChanged("BudgetTransactions"); }
-        }
-        private void NewTransaction()
-        {
-            var transaction = new Transaction();
-            AllTransactions.Add(transaction);
-        }
-
-        private void AddTransactions()
-        {
-            foreach (var transaction in AllTransactions)
-            {
-                var category = AllCategories.FirstOrDefault(x => x.ID == transaction.CategoryID);
-                if (category != null)
-                    category.Transactions.Add(transaction);
-            }
-            OnPropertyChanged("BudgetCategories");
-            OnPropertyChanged("BudgetTransactions");
-            AllTransactions.Clear();
-        }
-
-        private void RemoveTransaction(Transaction selectedTransaction)
-        {
-            if (selectedTransaction == null)
-                return;
-            else
-                AllTransactions.Remove(selectedTransaction);
-        }
-
-        private void RemoveBudgetTransactions(Transaction selectedBudgetTransaction)
-        {
-            if (selectedBudgetTransaction == null)
-                return;
-            else
-            {
-                var category = Budget.GetCategoryThatContainsTransaction(selectedBudgetTransaction);
-                if (category != null)
-                    category.Transactions.Remove(selectedBudgetTransaction);
-
-            }
-        }
-
-        private void AddCategory()
-        {
-            var category = new BudgetCategory(Budget, Budget.Categories.Count() + 1, "");
-            Budget.Categories.Add(category);
-            OnPropertyChanged("AllCategories");
-        }
-
-        private void ClearCategoryFilter()
-        {
-            CategoryFilter = null;
-        }
-
-        private void ClearDateFilter()
-        {
-            FromDateFilter = ToDateFilter = null;
+            set { _selectedBudgetTransaction = value; OnPropertyChanged("SelectedBudgetTransaction"); }
         }
 
         private BudgetCategory _categoryFilter;
@@ -255,26 +341,22 @@ namespace SpreetailBudget.ViewModels
                     FilterTransactions();
             }
         }
-
-        private void RemoveDateFilters()
-        {
-            BudgetTransactions.ToList().ForEach(x => x.IsFiltered = false);
-        }
-
+       
         private void FilterTransactions()
         {
-            BudgetTransactions.ToList().ForEach(x => x.IsFiltered = false);
+            BudgetTransactions.ToList().ForEach(x => x.IsVisible = true);
 
             if (_fromDateFilter != null && _toDateFilter != null)
             {
-                BudgetTransactions.Where(y => y.ProcessDate < _fromDateFilter || y.ProcessDate > _toDateFilter).ToList().ForEach(x => x.IsFiltered = true);
+                BudgetTransactions.Where(y => y.ProcessDate < _fromDateFilter || y.ProcessDate > _toDateFilter).ToList().ForEach(x => x.IsVisible = false);
             }
             if (CategoryFilter != null)
             {
-                BudgetTransactions.Where(y => y.CategoryID != CategoryFilter.ID).ToList().ForEach(x => x.IsFiltered = true); 
+                BudgetTransactions.Where(y => y.CategoryID != CategoryFilter.ID).ToList().ForEach(x => x.IsVisible = false);
             }
+            OnPropertyChanged("FilteredBudgetTransactions");
         }
 
-        public Budget Budget { get; }
+        public Budget Budget { get; set; }
     }
 }

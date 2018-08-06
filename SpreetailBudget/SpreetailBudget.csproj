@@ -58,10 +58,12 @@
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\IsPositiveOrNegativeToColorConverter.cs" />
     <Compile Include="Events\EventArgs.cs" />
+    <Compile Include="Extensions\Budget - Extensions.cs" />
     <Compile Include="Models\BindableBase.cs" />
     <Compile Include="Models\Budget.cs" />
     <Compile Include="Models\BudgetCategory.cs" />
     <Compile Include="Models\Transaction.cs" />
+    <Compile Include="Serializer\Serializer.cs" />
     <Compile Include="ViewModels\BaseVM.cs" />
     <Compile Include="ViewModels\BudgetVM.cs" />
     <Compile Include="ViewModels\HomeVM.cs" />
@@ -123,7 +125,10 @@
     <Resource Include="res\bk.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Extensions\" />
+    <Folder Include="SavedBudgets\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="res\Title.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

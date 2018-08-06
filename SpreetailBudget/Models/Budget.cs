@@ -5,11 +5,17 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace SpreetailBudget.Models
 {
+    [Serializable]
     public class Budget : BindableBase
     {
+        public Budget()
+        {
+
+        }
         public Budget(string title)
         {
             _title = title;
@@ -19,6 +25,8 @@ namespace SpreetailBudget.Models
         private void Categories_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             OnPropertyChanged("TotalBudgetedAmount");
+            OnPropertyChanged("TotalSpentAmount");
+            OnPropertyChanged("TotalRemainingAmount");
             if (e.NewItems != null)
                 foreach (BudgetCategory category in e.NewItems)
                     category.PropertyChanged += Category_PropertyChanged;
@@ -55,24 +63,10 @@ namespace SpreetailBudget.Models
 
         public float TotalRemainingAmount
         {
-            get { return Categories.Sum(x => x.RemainingAmount); }
+            get { return TotalBudgetedAmount - TotalSpentAmount; }
         }
         public ObservableCollection<BudgetCategory> Categories { get; } = new ObservableCollection<BudgetCategory>();
         
-        internal BudgetCategory GetCategoryThatContainsTransaction(Transaction transaction)
-        {
-            if (transaction != null)
-            {
-                foreach (var category in Categories)
-                {
-                    if (category.Transactions.Contains(transaction))
-                    {
-                        return category;
-                    }
-                }
-            }
-            return null;
-        }
-
+        
     }
 }

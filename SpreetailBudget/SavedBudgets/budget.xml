@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Budget xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Title>Beer</Title>
+  <Categories>
+    <BudgetCategory>
+      <ID>1</ID>
+      <CategoryTitle>a</CategoryTitle>
+      <BudgetedAmount>20</BudgetedAmount>
+      <Transactions>
+        <Transaction>
+          <CategoryID>1</CategoryID>
+          <Description>beer</Description>
+          <Amount>40</Amount>
+          <ProcessDate>2018-08-05T20:34:41.9666615-05:00</ProcessDate>
+          <IsVisible>true</IsVisible>
+        </Transaction>
+      </Transactions>
+    </BudgetCategory>
+    <BudgetCategory>
+      <ID>2</ID>
+      <CategoryTitle>b</CategoryTitle>
+      <BudgetedAmount>330</BudgetedAmount>
+      <Transactions>
+        <Transaction>
+          <CategoryID>2</CategoryID>
+          <Description>truck</Description>
+          <Amount>10</Amount>
+          <ProcessDate>2018-08-30T00:00:00</ProcessDate>
+          <IsVisible>true</IsVisible>
+        </Transaction>
+      </Transactions>
+    </BudgetCategory>
+    <BudgetCategory>
+      <ID>3</ID>
+      <CategoryTitle />
+      <BudgetedAmount>1</BudgetedAmount>
+      <Transactions />
+    </BudgetCategory>
+  </Categories>
+</Budget>

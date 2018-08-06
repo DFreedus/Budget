@@ -6,13 +6,20 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace SpreetailBudget.Models
 {
+    [XmlInclude(typeof(BudgetCategory))]
     public class BudgetCategory : BindableBase
     {
         private static Budget _budget;
 
+       
+        public BudgetCategory()
+        {
+
+        }
         public BudgetCategory(Budget budget, int id)
         {
             _budget = budget;
@@ -52,6 +59,7 @@ namespace SpreetailBudget.Models
         }
 
         private float _budgetedAmount;
+
         public float BudgetedAmount
         {
             get { return _budgetedAmount; }
