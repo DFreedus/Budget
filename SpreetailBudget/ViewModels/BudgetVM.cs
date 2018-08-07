@@ -10,6 +10,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace SpreetailBudget.ViewModels
@@ -124,6 +125,9 @@ namespace SpreetailBudget.ViewModels
         #region command execution methods
         private void SaveBudget()
         {
+            ClearDateFilter();
+            CategoryFilter = null;
+            OnPropertyChanged("FilteredBudgetTransactions");
             Serializer.Serialize(Budget);
         }
         private void LoadBudget()
@@ -132,20 +136,21 @@ namespace SpreetailBudget.ViewModels
             if (budget != null)
                 Budget = budget;
             OnPropertyChanged("BudgetCategories");
-            OnPropertyChanged("Filter");
+            OnPropertyChanged("BudgetTransactions");
+            OnPropertyChanged("FilteredBudgetTransactions");
+
         }
 
         private void ClearBudget()
         {
-            var messageBoxResult = System.Windows.MessageBox.Show("Are you sure you want to clear your current budget?\nThis action can't be undone!");
+            var messageBoxResult = MessageBox.Show("Are you sure you want to clear your current budget?\nThis action can't be undone!", "Proceed?", MessageBoxButton.YesNo);
             switch (messageBoxResult)
             {
-                case (System.Windows.MessageBoxResult.OK):
+                case (MessageBoxResult.Yes):
                     {
                         foreach (var category in Budget.Categories)
                             category.Transactions.Clear();
                         Budget.Categories.Clear();
-                        //Budget = new Budget("");
                         OnPropertyChanged("BudgetCategories");
                         OnPropertyChanged("BudgetTransactions");
                         OnPropertyChanged("FilteredBudgetTransactions");
@@ -171,6 +176,10 @@ namespace SpreetailBudget.ViewModels
                 if (category != null)
                     category.Transactions.Add(transaction);
             }
+            
+            OnPropertyChanged("Budget");
+            OnPropertyChanged("BudgetCategories");
+            OnPropertyChanged("BudgetTransactions");
             OnPropertyChanged("FilteredBudgetTransactions");
             AllTransactions.Clear();
         }
@@ -191,14 +200,19 @@ namespace SpreetailBudget.ViewModels
             {
                 var category = Budget.GetCategoryThatContainsTransaction(selectedBudgetTransaction);
                 if (category != null)
+                {
                     category.Transactions.Remove(selectedBudgetTransaction);
-
+                    OnPropertyChanged("FilteredBudgetTransactions");
+                    OnPropertyChanged("BudgetCategories");
+                    OnPropertyChanged("Budget");
+                }
             }
         }
 
         private void AddCategory()
         {
-            Budget.Categories.Add(new BudgetCategory(Budget, Budget.Categories.Count() + 1, ""));
+            Budget.Categories.Add(new BudgetCategory(Budget.Categories.Count() + 1, ""));
+            OnPropertyChanged("Budget");
             OnPropertyChanged("BudgetCategories");
         }
 
@@ -357,6 +371,7 @@ namespace SpreetailBudget.ViewModels
             OnPropertyChanged("FilteredBudgetTransactions");
         }
 
-        public Budget Budget { get; set; }
+        private Budget _budget;
+        public Budget Budget { get { return _budget; } set { _budget = value; OnPropertyChanged("Budget"); } }
     }
 }

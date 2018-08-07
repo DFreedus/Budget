@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Xml.Serialization;
 
 namespace SpreetailBudget.Serialize
@@ -22,7 +23,10 @@ namespace SpreetailBudget.Serialize
 
                 tw.Close();
             }
-            catch (Exception e) { }
+            catch (Exception)
+            {
+                MessageBox.Show("Failed To Save Budget");
+            }
 
         }
 
@@ -39,7 +43,10 @@ namespace SpreetailBudget.Serialize
                     budget = (Budget)xs.Deserialize(sr);
                 }
             }
-            catch (Exception e) { }
+            catch (Exception)
+            {
+                MessageBox.Show("Failed To Load Budget");
+            }
 
             return budget;
         }

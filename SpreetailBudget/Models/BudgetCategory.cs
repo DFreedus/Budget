@@ -13,23 +13,19 @@ namespace SpreetailBudget.Models
     [XmlInclude(typeof(BudgetCategory))]
     public class BudgetCategory : BindableBase
     {
-        private static Budget _budget;
-
-       
         public BudgetCategory()
         {
 
         }
-        public BudgetCategory(Budget budget, int id)
+        public BudgetCategory(int id)
         {
-            _budget = budget;
             _id = id;
 
             Transactions.CollectionChanged += Transactions_CollectionChanged;
         }
 
-        public BudgetCategory(Budget budget, int id, String title)
-            : this(budget, id)
+        public BudgetCategory(int id, String title)
+            : this(id)
         {
             _categoryTitle = title;
             _budgetedAmount = 0;
@@ -42,7 +38,6 @@ namespace SpreetailBudget.Models
             OnPropertyChanged("IsPositiveNegative");
             OnPropertyChanged("BudgetTransactions");
         }
-
 
         private int _id;
         public int ID
@@ -67,22 +62,10 @@ namespace SpreetailBudget.Models
             {
                 _budgetedAmount = value;
                 OnPropertyChanged("BudgetedAmount");
+                OnPropertyChanged("BudgetCategories");
                 OnPropertyChanged("RemainingAmount");
                 OnPropertyChanged("IsPositiveNegative");
                 OnPropertyChanged("TotalBudgetedAmount");
-            }
-        }
-
-        public string IsPositiveNegative
-        {
-            get
-            {
-                if (RemainingAmount < 0)
-                    return "-1";
-                if (RemainingAmount > 0)
-                    return "1";
-                else
-                    return "0";
             }
         }
 

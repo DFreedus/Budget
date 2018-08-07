@@ -17,18 +17,15 @@
         <converters:IsPositiveOrNegativeToColorConverter x:Key="isPositiveOrNegativeToColorConverter"/>
         <DataTemplate x:Key="BudgetCategories">
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="{Binding Transactions.Count}"
-                           Margin="40,0,0,0"
-                           Width="50" />
                 <TextBox Text="{Binding CategoryTitle, Mode=TwoWay}"
                          Margin="10,0,0,0"
                          Width="100"/>
                 <TextBox Text="{Binding BudgetedAmount, Mode=TwoWay, StringFormat=C}"
-                         Margin="40,0,0,0"
+                         Margin="35,0,0,0"
                          VerticalAlignment="Center"
                          Width="50"/>
-                <TextBlock Text="{Binding SpentAmount, Mode=OneWay, StringFormat=C}"
-                           Margin="35,0,0,0"
+                <TextBlock Text="{Binding SpentAmount, StringFormat=C}"
+                           Margin="40,0,0,0"
                            VerticalAlignment="Center"
                            Width="50"/>
                 <TextBlock Text="{Binding RemainingAmount, StringFormat=C}"
@@ -36,6 +33,9 @@
                            VerticalAlignment="Center"
                            Foreground="{Binding RemainingAmount, Converter={StaticResource isPositiveOrNegativeToColorConverter}}"
                            Width="50"/>
+                <TextBlock Text="{Binding Transactions.Count}"
+                           Margin="40,0,0,0"
+                           Width="50" />
             </StackPanel>
             
         </DataTemplate>
@@ -51,49 +51,19 @@
                           SelectedValuePath="Key"
                           DisplayMemberPath="Value"
                           Width="100"
-                          Margin="5,0,0,5"
+                          Margin="15,0,0,5"
                           IsHitTestVisible="False"
                           IsTabStop="False"/>
                 <TextBlock Name="BudgetTransactionsAmount"
                            Text="{Binding Amount, StringFormat=C}"
                            Width="50"
-                           Margin="5,0,0,5"/>
+                           Margin="20,0,0,5"/>
                 <DatePickerTextBox Text="{Binding ProcessDate, StringFormat='MM dd yyyy'}"
-                                   Margin="5,0,0,5"
+                                   Margin="50,0,0,5"
                                    Focusable="False"
                                    IsReadOnly="True"/>
             </StackPanel>
         </DataTemplate>
-        <!--<DataTemplate x:Key="BudgetTransactions">
-            <StackPanel Orientation="Horizontal"
-                        MinWidth="450"
-                        Visibility="{Binding Path=DataContext.IsFiltered, RelativeSource={RelativeSource AncestorType=ListViewItem}, Converter={StaticResource booleanToVisibilityConverter}}">
-                <TextBlock Text="{Binding Description}"
-                           Margin="0,0,0,5"
-                           Width="100"
-                           Visibility="{Binding Path=DataContext.IsFiltered, RelativeSource={RelativeSource AncestorType=ListViewItem}, Converter={StaticResource booleanToVisibilityConverter}}"/>
-                <ComboBox Name="BudgetTransactionsTransactionCategories"
-                          ItemsSource="{Binding Path=DataContext.TransactionCategories, RelativeSource={RelativeSource AncestorType=ListView, AncestorLevel=2}}"
-                          SelectedValue="{Binding CategoryID}"
-                          SelectedValuePath="Key"
-                          DisplayMemberPath="Value"
-                          Width="100"
-                          Margin="5,0,0,5"
-                          IsHitTestVisible="False"
-                          IsTabStop="False"
-                          Visibility="{Binding Path=DataContext.IsFiltered, RelativeSource={RelativeSource AncestorType=ListViewItem}, Converter={StaticResource booleanToVisibilityConverter}}"/>
-                <TextBlock Name="BudgetTransactionsAmount"
-                           Text="{Binding Amount, StringFormat=C}"
-                           Width="50"
-                           Margin="5,0,0,5"
-                           Visibility="{Binding Path=DataContext.IsFiltered, RelativeSource={RelativeSource AncestorType=ListViewItem}, Converter={StaticResource booleanToVisibilityConverter}}"/>
-                <DatePickerTextBox Text="{Binding ProcessDate, StringFormat='MM dd yyyy'}"
-                                   Margin="5,0,0,5"
-                                   Focusable="False"
-                                   IsReadOnly="True"
-                                   Visibility="{Binding Path=DataContext.IsFiltered, RelativeSource={RelativeSource AncestorType=ListViewItem}, Converter={StaticResource booleanToVisibilityConverter}}"/>
-            </StackPanel>
-        </DataTemplate>-->
         <DataTemplate x:Key="AllTransactions">
             <StackPanel Orientation="Horizontal">
                 <TextBox Text="{Binding Description, Mode=TwoWay}"
@@ -115,8 +85,8 @@
         </DataTemplate>
         <DataTemplate x:Key="BudgetCategoryDescriptions">
             <TextBlock Text="{Binding CategoryTitle, Mode=TwoWay}"
-                             Margin="10,0,0,0"
-                             Width="50"/>
+                       Margin="10,0,0,0"
+                       Width="50"/>
         </DataTemplate>
         <Style x:Key="ButtonStyle" TargetType="Button">
             <Setter Property="Template">
@@ -139,6 +109,10 @@
                 </Setter.Value>
             </Setter>
             <Setter Property="Foreground" Value="#8ef2cc"/>
+        </Style>
+        <Style TargetType="{x:Type ComboBoxItem}">
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="VerticalContentAlignment" Value="Top"/>
         </Style>
     </UserControl.Resources>
     <Grid>
@@ -201,16 +175,16 @@
                         <StackPanel Orientation="Horizontal"
                                     Margin="20,10,5,0"
                                     Background="Beige">
-                            <TextBlock Text="Transactions"
-                                       Margin="10,0,20,0"/>
                             <TextBlock Text="Name"
                                        Margin="40,0,10,0"/>
                             <TextBlock Text="Budgeted" 
-                                       Margin="60,0,0,0"/>
+                                       Margin="65,0,0,0"/>
                             <TextBlock Text="Spent" 
-                                       Margin="40,0,0,0"/>
+                                       Margin="45,0,0,0"/>
                             <TextBlock Text="Remaining"
-                                       Margin="40,0,0,0"/>
+                                       Margin="35,0,0,0"/>
+                            <TextBlock Text="Transactions"
+                                       Margin="25,0,20,0"/>
                         </StackPanel>
                         <ListView ScrollViewer.HorizontalScrollBarVisibility="Auto"
                                   ItemsSource="{Binding BudgetCategories}"
@@ -236,14 +210,16 @@
                             <TextBlock Text="{Binding Budget.TotalBudgetedAmount, StringFormat=C}"
                                        Foreground="{Binding Budget.TotalBudgetedAmount, Converter={StaticResource isPositiveOrNegativeToColorConverter}}"
                                        HorizontalAlignment="Center"
-                                       Margin="200,0,0,5"/>
+                                       Margin="105,0,0,5"/>
                             <TextBlock Text="{Binding Budget.TotalSpentAmount, StringFormat=C}"
                                        HorizontalAlignment="Center"
-                                       Margin="55,0,50,5"/>
+                                       Margin="55,0,5,5"/>
                             <TextBlock Text="{Binding Budget.TotalRemainingAmount, StringFormat=C}"
                                        HorizontalAlignment="Center"
                                        Foreground="{Binding Budget.TotalRemainingAmount, Converter={StaticResource isPositiveOrNegativeToColorConverter}}"
-                                       Margin="5,0,0,5"/>
+                                       Margin="50,0,0,5"/>
+                            <TextBlock Text="{Binding BudgetTransactions.Count}"
+                                       Margin="60,0,0,5"/>
                         </StackPanel>
                     </StackPanel>
                     <StackPanel Orientation="Vertical"
@@ -341,56 +317,30 @@
                             <TextBlock Text="Description"
                                        Margin="10,0,0,0"/>
                             <TextBlock Text="Category"
-                                       Margin="40,0,0,0"/>
+                                       Margin="60,0,0,0"/>
                             <TextBlock Text="Amount" 
-                                       Margin="50,0,0,0"/>
+                                       Margin="60,0,0,0"/>
                             <TextBlock Text="Process Date"
-                                       
-                                       Margin="40,0,0,0"/>
+                                       Margin="60,0,0,0"/>
                         </StackPanel>
                         <ListView Name="BudgetTransactions"
                                   ItemsSource="{Binding FilteredBudgetTransactions}"
                                   ItemTemplate="{StaticResource BudgetTransactions}"
+                                  SelectedItem="{Binding SelectedBudgetTransaction, Mode=TwoWay}"
                                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                                   MaxHeight="280"
                                   MinHeight="100"
                                   Margin="20,0,5,20"/>
-                        <!--<ListView Name="BudgetTransactions"
-                                  ItemsSource="{Binding BudgetCategories}"
-                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                                  MaxHeight="280"
-                                  MinHeight="100"
-                                  Margin="20,0,5,20">
-                            <ListView.ItemTemplate>
-                                <DataTemplate>
-                                    <ListView ItemsSource="{Binding Transactions}" 
-                                              ItemTemplate="{StaticResource BudgetTransactions}"
-                                              SelectedItem="{Binding DataContext.SelectedBudgetTransaction, RelativeSource={RelativeSource AncestorType=ListView}}"
-                                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                                              MinWidth="410"
-                                              BorderBrush="Transparent"
-                                              BorderThickness="0" >
-                                        <ListView.ItemContainerStyle>
-                                            <Style TargetType="{x:Type ListViewItem}">
-                                                <Setter Property="Background" Value="Pink"/>
-                                            </Style>
-                                        </ListView.ItemContainerStyle>
-                                    </ListView>
-                                </DataTemplate>
-                            </ListView.ItemTemplate>
-                            <ListView.ItemContainerStyle>
-                                <Style TargetType="{x:Type ListViewItem}">
-                                    <Setter Property="Background" Value="Pink"/>
-                                </Style>
-                            </ListView.ItemContainerStyle>
-                        </ListView>-->
                         <TextBlock Text="Filters"
                                    FontSize="16"
                                    HorizontalAlignment="Center"/>
-                        <StackPanel Orientation="Horizontal"
+                        <StackPanel Name="Filters"
+                                    Orientation="Horizontal"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
                                     Margin="20,0,5,0">
-                            
-                            <StackPanel Orientation="Vertical">
+                            <StackPanel Orientation="Vertical"
+                                        Margin="5,0,0,0">
                                 <TextBlock Text="Category" 
                                            Margin="10,5,5,5"/>
                                 <ComboBox Name="CategoryFilterComboBox"
@@ -424,7 +374,7 @@
                                 <Button Content="X"
                                         Command="{Binding ClearDateRangeFilterCommand}"
                                         VerticalAlignment="Bottom"
-                                        Margin="5,5,5,10"
+                                        Margin="5,5,5,5"
                                         Width="20"
                                         Style="{StaticResource ButtonStyle}"/>
                         </StackPanel>

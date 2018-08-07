@@ -16,8 +16,6 @@ namespace SpreetailBudget.ViewModels
         protected object _homeView;
         protected object _budgetView;
 
-        
-
         public MainWindowVM()
         {
             _homeView = new HomeView();
@@ -35,8 +33,6 @@ namespace SpreetailBudget.ViewModels
                 return _switchToBudgetViewCommand ?? (_switchToBudgetViewCommand = new RelayCommand(x => { SwitchToBudgetView(); }));
             }
         }
-
-        
 
         private ICommand _exitApplicationCommand;
         public object ExitApplicationCommand

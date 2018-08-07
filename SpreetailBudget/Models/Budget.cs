@@ -14,7 +14,7 @@ namespace SpreetailBudget.Models
     {
         public Budget()
         {
-
+            Categories.CollectionChanged += Categories_CollectionChanged;
         }
         public Budget(string title)
         {
