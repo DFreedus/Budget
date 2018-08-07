@@ -208,7 +208,6 @@
                                        HorizontalAlignment="Center"
                                        Margin="10,0,0,5"/>
                             <TextBlock Text="{Binding Budget.TotalBudgetedAmount, StringFormat=C}"
-                                       Foreground="{Binding Budget.TotalBudgetedAmount, Converter={StaticResource isPositiveOrNegativeToColorConverter}}"
                                        HorizontalAlignment="Center"
                                        Margin="105,0,0,5"/>
                             <TextBlock Text="{Binding Budget.TotalSpentAmount, StringFormat=C}"
