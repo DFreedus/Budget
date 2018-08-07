@@ -124,11 +124,12 @@
   <ItemGroup>
     <Resource Include="res\bk.jpg" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="SavedBudgets\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="res\Title.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="SavedBudgets\budget.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
